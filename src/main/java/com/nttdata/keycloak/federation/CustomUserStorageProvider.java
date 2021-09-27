@@ -50,7 +50,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
     public UserModel getUserByUsername(String username, RealmModel realm) {
         log.info("[I41] getUserByUsername({" + username + "})");
         try ( Connection c = DbUtil.getConnection(this.model)) {
-            PreparedStatement st = c.prepareStatement("select phone as username, first_name as firstName, last_name as lastName, email from users where username = ?");
+            PreparedStatement st = c.prepareStatement("select phone as username, first_name as firstName, last_name as lastName, email from users where phone = ?");
             st.setString(1, username);
             st.execute();
             ResultSet rs = st.getResultSet();

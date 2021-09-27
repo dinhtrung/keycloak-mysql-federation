@@ -1,6 +1,5 @@
 package com.nttdata.keycloak.federation;
 
-import com.mysql.cj.jdbc.Driver;
 import lombok.extern.jbosslog.JBossLog;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
@@ -15,89 +14,68 @@ import java.util.List;
 
 @JBossLog
 public class CustomUserStorageProviderFactory implements UserStorageProviderFactory<CustomUserStorageProvider> {
-    protected final List<ProviderConfigProperty> configMetadata;
-    
     public CustomUserStorageProviderFactory() {
-        log.info("[I24] CustomUserStorageProviderFactory created");
-        
-        
-        // Create config metadata
-        configMetadata = ProviderConfigurationBuilder.create()
-            .property()
-                .name(Constants.CONFIG_KEY_DB_HOST)
-                .label("Mysql Database Hostname")
-                .type(ProviderConfigProperty.STRING_TYPE)
-                .defaultValue("localhost")
-                .helpText("Host name to connect to MySQL")
-                .add()
-            .property()
-                .name(Constants.CONFIG_KEY_DB_PORT)
-                .label("Mysql Database Hostname")
-                .type(ProviderConfigProperty.STRING_TYPE)
-                .defaultValue("3306")
-                .helpText("Port to connect to MySQL")
-                .add()
-            .property()
-                .name(Constants.CONFIG_KEY_DB_NAME)
-                .label("Database")
-                .type(ProviderConfigProperty.STRING_TYPE)
-                .helpText("Database to query")
-                .add()
-//          .property()
-//            .name(Constants.CONFIG_KEY_JDBC_DRIVER)
-//            .label("JDBC Driver Class")
-//            .type(ProviderConfigProperty.STRING_TYPE)
-//            .defaultValue(Driver.class.getName())
-//            .helpText("Fully qualified class name of the JDBC driver")
-//            .add()
-//          .property()
-//            .name(Constants.CONFIG_KEY_JDBC_URL)
-//            .label("JDBC URL")
-//            .type(ProviderConfigProperty.STRING_TYPE)
-//            .defaultValue("jdbc:h2:mem:customdb")
-//            .helpText("JDBC URL used to connect to the user database")
-//            .add()
-          .property()
-            .name(Constants.CONFIG_KEY_DB_USERNAME)
-            .label("Database User")
-            .type(ProviderConfigProperty.STRING_TYPE)
-            .helpText("Username used to connect to the database")
-            .add()
-          .property()
-            .name(Constants.CONFIG_KEY_DB_PASSWORD)
-            .label("Database Password")
-            .type(ProviderConfigProperty.STRING_TYPE)
-            .helpText("Password used to connect to the database")
-            .secret(true)
-            .add()
-          .property()
-            .name(Constants.CONFIG_KEY_VALIDATION_QUERY)
-            .label("SQL Validation Query")
-            .type(ProviderConfigProperty.STRING_TYPE)
-            .helpText("SQL query used to validate a connection")
-            .defaultValue("select 1")
-            .add()
-          .build();   
-          
     }
 
     @Override
     public CustomUserStorageProvider create(KeycloakSession ksession, ComponentModel model) {
-        log.info("[I63] creating new CustomUserStorageProvider");
-        return new CustomUserStorageProvider(ksession,model);
+        log.info("[I63] creating new CustomUserStorageProvider: " + model.getId());
+        return new CustomUserStorageProvider(ksession, model);
     }
 
     @Override
     public String getId() {
         log.info("[I69] getId()");
-        return "custom-user-provider";
+        return "ntt-federation-mysql-provider";
     }
 
     
     // Configuration support methods
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return configMetadata;
+
+        return ProviderConfigurationBuilder.create()
+                .property()
+                .name(Constants.CONFIG_KEY_DB_HOST)
+                .label("Mysql Database Hostname")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .defaultValue("localhost")
+                .helpText("Host name to connect to MySQL")
+                .add()
+                .property()
+                .name(Constants.CONFIG_KEY_DB_PORT)
+                .label("Mysql Database Hostname")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .defaultValue("3306")
+                .helpText("Port to connect to MySQL")
+                .add()
+                .property()
+                .name(Constants.CONFIG_KEY_DB_NAME)
+                .label("Database")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .helpText("Database to query")
+                .add()
+                .property()
+                .name(Constants.CONFIG_KEY_DB_USERNAME)
+                .label("Database User")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .helpText("Username used to connect to the database")
+                .add()
+                .property()
+                .name(Constants.CONFIG_KEY_DB_PASSWORD)
+                .label("Database Password")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .helpText("Password used to connect to the database")
+                .secret(true)
+                .add()
+                .property()
+                .name(Constants.CONFIG_KEY_VALIDATION_QUERY)
+                .label("SQL Validation Query")
+                .type(ProviderConfigProperty.STRING_TYPE)
+                .helpText("SQL query used to validate a connection")
+                .defaultValue("select 1")
+                .add()
+                .build();
     }
 
     @Override
